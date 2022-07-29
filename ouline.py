@@ -32,7 +32,7 @@ def main():
     role = input()
     location = input("Enter location you want to search\n")
     # Complete the missing part of this function here
-    print("My role is: " + role + ' ' + "my location is " + location)
+    print("My role is: " + "'" + role + "'" + ' ' + "my location is " + "'" + location + "'")
     
 if __name__ == '__main__':
     main()
