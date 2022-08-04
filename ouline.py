@@ -31,7 +31,7 @@ def getJobList(role,location):
     description = doc.find_all('p', {'class' : 'card__job-snippet'})
     companyName = doc.find_all('div', {'class' : 'card__job-empname-label'})
 
-    # Empty list for jobs
+    # Empty list for jobs 
     jobList = []
 
     # For loop using all job details
