@@ -1,38 +1,75 @@
 #import beautifulsoup and request here
+from pyparsing import str_type
 import requests
+from bs4 import BeautifulSoup
+import json
 
-url = "https://www.indeed.com/jobs?q=Software Developer&l=Charlotte"
-
-payload={}
-headers = {
-  'Cookie': 'CTK=1g95jo3ttghpg800; __cf_bm=jj8rAx0vP1FapIQGa4zXdd8t9AiNW3_tbGUXONiyhZE-1659119603-0-AY9Fnr+c+0IZPCv1UPE91Yyy2FBhX0ZHUP2J7D39NgyVZpLF2xclijQMBBVzPWOmGRWVgcyyzdmZ7YhH51XiirM=; _cfuvid=Hclq0XDBWx6T9IdLK3qK8tCpJLiP5G6DWqPr3Irw00g-1659119603850-0-604800000; INDEED_CSRF_TOKEN=Y5wcaiTFatj3VWlGQMsAvWFshL2zhL69; JSESSIONID=FD42A4B2BF8169AF5EF182C3FCDA2F42; PREF="TM=1659119603654:L=Charlotte"; RQ="q=Software+Developer&l=Charlotte&ts=1659119603681"; UD="LA=1659119603:CV=1659119603:TS=1659119603:SG=3a462e59ad44d1c33c6a4faeb9544bf8"; ctkgen=1; indeed_rcc=""; jaSerpCount=1'
-}
-
-response = requests.request("GET", url, headers=headers, data=payload)
-
-print(response.text)
-
-def displayJobDetails():
-    print("Display job details")
-
-#function to get job list from url 'https://www.indeed.com/jobs?q={role}&l={location}'
+#function to get job list from url 'https://www.monster.com/jobs/search?q={role}&where={location}'
 def getJobList(role,location):
-    url = 'https://www.indeed.com/jobs?q={role}&l={location}'
-    # Complete the missing part of this function here 
+    # Params for user input
+    params = {
+        'k' : role,
+        'l': location
+    }
+
+    url = 'https://www.talent.com/jobs?'
+
+    # Get request from url using params
+    response = requests.request("GET", url, params=params)
+    
+    # Create BeautifulSoup object, pass request object
+    doc = BeautifulSoup(response.text, 'lxml')
+
+    # Response, get a response from specified url
+    # Doc object from beautiful soup that parses html 
+    response = requests.request("GET", url, params=params)
+    doc = BeautifulSoup(response.text, 'html.parser')
+    
+    # Get all jobTitles, locations, descriptions
+    jobTitle = doc.find_all('a', {'class' : 'card__job-link gojob'})
+    location = doc.find_all('div', {'class' : 'card__job-location'})
+    description = doc.find_all('p', {'class' : 'card__job-snippet'})
+    companyName = doc.find_all('div', {'class' : 'card__job-empname-label'})
+
+    # Empty list for jobs
+    jobList = []
+
+    # For loop using all job details
+    for j, l, d, c in zip(jobTitle, location, description, companyName):
+        jobDetails = {'Title' : j.text, 'Company' : c.text, 'Description' : d.text, 'Location' : l.text}
+        jobList.append(jobDetails)
+
+    # Return list
+    return jobList
+    
+
 
 #save data in JSON file
 def saveDataInJSON(jobDetails):
     #Complete the missing part of this function here
     print("Saving data to JSON")
+    
+    # Writing to json file
+    jobDetails_json = open('jobDetails.json', 'w')
+    json.dump(jobDetails, jobDetails_json)
+    
 
 #main function
 def main():
-    # Write a code here to get job location and role from user e.g. role = input()
-    print("Enter role you want to search")
-    role = input()
+    # Get user input. Make function calls. 
+    role = input("Enter role you want to search\n")
     location = input("Enter location you want to search\n")
-    # Complete the missing part of this function here
-    print("My role is: " + "'" + role + "'" + ' ' + "my location is " + "'" + location + "'")
-    
+    print("The role you searched is " + "'" + role + "'" + " and the location you searched is " + "'" + location + "'.")
+    print("=============================================================================================================")
+    jobDetails = getJobList(role,location)
+    for j in jobDetails:
+        print(j)
+        print("==============================")
+    print("*\n")
+    print("*\n")
+    print("*\n")
+    print("*\n")
+    saveDataInJSON(jobDetails)
+
 if __name__ == '__main__':
     main()
