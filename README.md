@@ -1,3 +1,3 @@
 # pythonBeautifulSoup
 
-This is to highlight a new change from daniel bakhshandeh
+This program takes user input and saves data to JSON file by running the ouline.py file. 
