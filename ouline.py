@@ -36,7 +36,7 @@ def getJobList(role,location):
 
     # For loop using all job details
     for j, l, d, c in zip(jobTitle, location, description, companyName):
-        jobDetails = {'Title' : j.text, 'Company' : c.text, 'Description' : d.text, 'Location' : l.text}
+        jobDetails = {'Title' : j.text.replace('\n', '').replace("'","").strip(), 'Company' : c.text, 'Description' : d.text, 'Location' : l.text}
         jobList.append(jobDetails)
 
     # Return list
